@@ -12,13 +12,13 @@ namespace Quizzer.Areas.Identity.Pages.Account.Manage
 {
     public class ResetAuthenticatorModel : PageModel
     {
-        UserManager<ApplicationUser> _userManager;
-        private readonly SignInManager<ApplicationUser> _signInManager;
+        UserManager<QuizPlayer> _userManager;
+        private readonly SignInManager<QuizPlayer> _signInManager;
         ILogger<ResetAuthenticatorModel> _logger;
 
         public ResetAuthenticatorModel(
-            UserManager<ApplicationUser> userManager,
-            SignInManager<ApplicationUser> signInManager,
+            UserManager<QuizPlayer> userManager,
+            SignInManager<QuizPlayer> signInManager,
             ILogger<ResetAuthenticatorModel> logger)
         {
             _userManager = userManager;

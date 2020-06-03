@@ -16,9 +16,9 @@ namespace Quizzer.Areas.Identity.Pages.Account
     [AllowAnonymous]
     public class ResetPasswordModel : PageModel
     {
-        private readonly UserManager<ApplicationUser> _userManager;
+        private readonly UserManager<QuizPlayer> _userManager;
 
-        public ResetPasswordModel(UserManager<ApplicationUser> userManager)
+        public ResetPasswordModel(UserManager<QuizPlayer> userManager)
         {
             _userManager = userManager;
         }

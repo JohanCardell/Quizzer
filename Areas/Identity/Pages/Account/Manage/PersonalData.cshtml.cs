@@ -9,11 +9,11 @@ namespace Quizzer.Areas.Identity.Pages.Account.Manage
 {
     public class PersonalDataModel : PageModel
     {
-        private readonly UserManager<ApplicationUser> _userManager;
+        private readonly UserManager<QuizPlayer> _userManager;
         private readonly ILogger<PersonalDataModel> _logger;
 
         public PersonalDataModel(
-            UserManager<ApplicationUser> userManager,
+            UserManager<QuizPlayer> userManager,
             ILogger<PersonalDataModel> logger)
         {
             _userManager = userManager;
