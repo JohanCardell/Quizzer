@@ -7,10 +7,12 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Newtonsoft.Json;
+using Microsoft.EntityFrameworkCore.ChangeTracking;
 
 namespace Quizzer.Data
 {
-    public class QuizDbContext : ApiAuthorizationDbContext<QuizPlayer>
+    public class QuizDbContext : ApiAuthorizationDbContext<ApplicationUser>
     {
         public QuizDbContext(
             DbContextOptions options,
@@ -19,17 +21,37 @@ namespace Quizzer.Data
             Database.EnsureCreated();
         }
 
-        public DbSet<QuizPlayer> QuizPlayers { get; set; }
+        public DbSet<ApplicationUser> Players { get; set; }
         public DbSet<ScoreEntry> ScoreEntries { get; set; }
+        public DbSet<Question> Questions { get; set; }
+        public DbSet<Answer> Answers { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
+            modelBuilder.Seed();
+            //modelBuilder.Entity<Question>().HasData(
+            //    new Question
+            //    {
+            //        Id = 1,
+            //        Text = "thohej",
+            //    });
+
+            //modelBuilder.Entity<Answer>().HasData(
+            //    new Answer
+            //    {
+            //        Id = 1,
+            //        Text = "hejsan",
+            //        QuestionId = 1,
+            //    });
+
             base.OnModelCreating(modelBuilder);
-            modelBuilder.Entity<ScoreEntry>()
-                .HasOne(se => se.QuizPlayer)
-                .WithMany(qp => qp.ScoreEntries)
-                .HasForeignKey(se => se.QuizPlayerId)
-                .OnDelete(DeleteBehavior.Cascade);
+
+            modelBuilder.Entity<ApplicationUser>()
+                .OwnsMany(qp => qp.ScoreEntries);
+
+
+
+            
         }
     }
 }

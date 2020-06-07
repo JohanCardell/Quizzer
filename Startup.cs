@@ -11,11 +11,17 @@ using Quizzer.Models;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using IdentityServer4.Extensions;
+using System.Threading.Tasks;
+using System.Collections.Generic;
+using System.Net.Http;
+using System;
 
 namespace Quizzer
 {
     public class Startup
     {
+        public QuizDbContext DbContext { get; set; }
         public Startup(IConfiguration configuration)
         {
             Configuration = configuration;
@@ -30,17 +36,19 @@ namespace Quizzer
                 options.UseSqlServer(
                     Configuration.GetConnectionString("DefaultConnection")));
 
-            services.AddDefaultIdentity<QuizPlayer>(options => options.SignIn.RequireConfirmedAccount = true)
+            services.AddDefaultIdentity<ApplicationUser>(options => options.SignIn.RequireConfirmedAccount = true)
                 .AddEntityFrameworkStores<QuizDbContext>();
 
             services.AddIdentityServer()
-                .AddApiAuthorization<QuizPlayer, QuizDbContext>();
+                .AddApiAuthorization<ApplicationUser, QuizDbContext>();
 
             services.AddAuthentication()
                 .AddIdentityServerJwt();
 
             services.AddControllersWithViews();
             services.AddRazorPages();
+
+            //services.AddTransient<IDatabaseSeed, DatabaseSeed>();
 
             // In production, the React files will be served from this directory
             services.AddSpaStaticFiles(configuration =>

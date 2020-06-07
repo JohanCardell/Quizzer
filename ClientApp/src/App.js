@@ -10,7 +10,15 @@ import { ApplicationPaths } from './components/api-authorization/ApiAuthorizatio
 
 import './custom.css'
 
-export default class App extends Component {
+class App extends Component {
+    //constructor(props) {
+    //    super(props);
+
+    //    this.state =
+    //    {
+    //        this.context: new qui
+    //    }
+    //}
   static displayName = App.name;
 
   render () {
@@ -22,5 +30,11 @@ export default class App extends Component {
         <Route path={ApplicationPaths.ApiAuthorizationPrefix} component={ApiAuthorizationRoutes} />
       </Layout>
     );
-  }
+    }
+       //if (Questions.Count() < 50)
+            //{
+            //    var seed = new DatabaseSeed();
+            //    seed.Run(this);
+            //}
 }
+export default App;

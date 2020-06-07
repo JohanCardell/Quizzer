@@ -7,7 +7,8 @@ namespace Quizzer.Models
 {
     public class ScoreEntry
     {
-        public QuizPlayer QuizPlayer { get; set; }
+        public int Id { get; set; }
+        public ApplicationUser QuizPlayer { get; set; }
 
         public string QuizPlayerId { get; set; }
 

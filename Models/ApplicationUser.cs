@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace Quizzer.Models
 {
-    public class QuizPlayer : IdentityUser
+    public class ApplicationUser : IdentityUser
     {
         public ICollection<ScoreEntry> ScoreEntries { get; set; }
     }
