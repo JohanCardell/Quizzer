@@ -13,16 +13,11 @@ namespace Quizzer
 {
     public static class DbSeedHelper
     {
-        //private readonly ILogger<WeatherForecastController> _logger;
         private const string URL = "https://opentdb.com/api.php";
         private static string urlParameters = "?amount=50&type=multiple";
         private static List<Question> modelledQuestions = new List<Question>();
         private static List<Answer> modelledAnswers = new List<Answer>();
-
-        //public DbSeedHelper(ILogger<DbSeedHelper> logger, QuizDbContext quizDb)
-        //{
-        //    _logger = logger;
-        //}
+      
         public static void Seed(this ModelBuilder modelBuilder)
         {
 
@@ -42,19 +37,19 @@ namespace Quizzer
 
                 foreach (var q in resultCollection.Results)
                 {
-                    Console.WriteLine("{0}", q.Question.FixQuotes());
-                    Console.WriteLine("Correct answer: {0}", q.CorrectAnswer);
-                    Console.WriteLine("Incorrect answers: {0}, {1}, {2}",
-                        q.IncorrectAnswers[0].FixQuotes(),
-                        q.IncorrectAnswers[1].FixQuotes(),
-                        q.IncorrectAnswers[2].FixQuotes());
-                    Console.WriteLine();
+                    //Console.WriteLine("{0}", q.Question.CleanSpecialChars());
+                    //Console.WriteLine("Correct answer: {0}", q.CorrectAnswer);
+                    //Console.WriteLine("Incorrect answers: {0}, {1}, {2}",
+                    //    q.IncorrectAnswers[0].CleanSpecialChars(),
+                    //    q.IncorrectAnswers[1].CleanSpecialChars(),
+                    //    q.IncorrectAnswers[2].CleanSpecialChars());
+                    //Console.WriteLine();
 
-                    modelledQuestions.Add(new Question { Id = questionIdCounter, Text = q.Question.FixQuotes() });
-                    modelledAnswers.Add(new Answer { Id = (10 * questionIdCounter) + 1, QuestionId = questionIdCounter, IsCorrect = true,  Text = q.CorrectAnswer.FixQuotes() });
-                    modelledAnswers.Add(new Answer {Id = (10 * questionIdCounter) + 2, QuestionId = questionIdCounter, Text = q.IncorrectAnswers[0].FixQuotes() });
-                    modelledAnswers.Add(new Answer { Id = (10 * questionIdCounter) + 3, QuestionId = questionIdCounter, Text = q.IncorrectAnswers[1].FixQuotes() });
-                    modelledAnswers.Add(new Answer {Id = (10 * questionIdCounter) + 4, QuestionId = questionIdCounter, Text = q.IncorrectAnswers[2].FixQuotes() });
+                    modelledQuestions.Add(new Question { Id = questionIdCounter, Text = q.Question.CleanSpecialChars() });
+                    modelledAnswers.Add(new Answer { Id = (10 * questionIdCounter) + 1, QuestionId = questionIdCounter, IsCorrect = true,  Text = q.CorrectAnswer.CleanSpecialChars() });
+                    modelledAnswers.Add(new Answer {Id = (10 * questionIdCounter) + 2, QuestionId = questionIdCounter, Text = q.IncorrectAnswers[0].CleanSpecialChars() });
+                    modelledAnswers.Add(new Answer { Id = (10 * questionIdCounter) + 3, QuestionId = questionIdCounter, Text = q.IncorrectAnswers[1].CleanSpecialChars() });
+                    modelledAnswers.Add(new Answer {Id = (10 * questionIdCounter) + 4, QuestionId = questionIdCounter, Text = q.IncorrectAnswers[2].CleanSpecialChars() });
 
                     questionIdCounter++;
                 }
@@ -69,7 +64,7 @@ namespace Quizzer
             modelBuilder.Entity<Answer>().HasData(modelledAnswers);
         }
 
-        public static string FixQuotes(this string str)
+        public static string CleanSpecialChars(this string str)
         {
             const string doubleQuote = "\"";
             const string singleQuote = "'";

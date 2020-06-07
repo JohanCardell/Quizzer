@@ -1,16 +1,9 @@
-﻿using Quizzer.Models;
-using IdentityServer4.EntityFramework.Options;
+﻿using IdentityServer4.EntityFramework.Options;
 using Microsoft.AspNetCore.ApiAuthorization.IdentityServer;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Options;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using Newtonsoft.Json;
-using Microsoft.EntityFrameworkCore.ChangeTracking;
 
-namespace Quizzer.Data
+namespace Quizzer.Models
 {
     public class QuizDbContext : ApiAuthorizationDbContext<ApplicationUser>
     {
@@ -29,29 +22,11 @@ namespace Quizzer.Data
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             modelBuilder.Seed();
-            //modelBuilder.Entity<Question>().HasData(
-            //    new Question
-            //    {
-            //        Id = 1,
-            //        Text = "thohej",
-            //    });
-
-            //modelBuilder.Entity<Answer>().HasData(
-            //    new Answer
-            //    {
-            //        Id = 1,
-            //        Text = "hejsan",
-            //        QuestionId = 1,
-            //    });
 
             base.OnModelCreating(modelBuilder);
 
             modelBuilder.Entity<ApplicationUser>()
                 .OwnsMany(qp => qp.ScoreEntries);
-
-
-
-            
         }
     }
 }
