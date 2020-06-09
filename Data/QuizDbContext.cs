@@ -2,8 +2,9 @@
 using Microsoft.AspNetCore.ApiAuthorization.IdentityServer;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Options;
+using Quizzer.Models;
 
-namespace Quizzer.Models
+namespace Quizzer.Data
 {
     public class QuizDbContext : ApiAuthorizationDbContext<ApplicationUser>
     {
@@ -17,7 +18,7 @@ namespace Quizzer.Models
         public DbSet<ApplicationUser> Players { get; set; }
         public DbSet<ScoreEntry> ScoreEntries { get; set; }
         public DbSet<Question> Questions { get; set; }
-        public DbSet<Answer> Answers { get; set; }
+        public DbSet<Option> Options { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {

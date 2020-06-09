@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 
 namespace Quizzer.Models
 {
-    public class Answer
+    public class Option
     {
         [Key]
         public int Id { get; set; }

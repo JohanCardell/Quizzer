@@ -52,6 +52,8 @@ html {
 body {
   /* Margin bottom by footer height */
   margin-bottom: 60px;
+  text-align: center;
+  background: linear-gradient(to top, #aedade, #e5e5e5)
 }
 .footer {
   position: absolute;
@@ -63,3 +65,4 @@ body {
   height: 60px;
   line-height: 60px; /* Vertically center the text there */
 }
+

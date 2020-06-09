@@ -7,6 +7,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Quizzer.Data;
 
 namespace Quizzer.Controllers
 {
@@ -27,10 +28,10 @@ namespace Quizzer.Controllers
         [HttpGet]
         public async Task<IEnumerable<Question>> GetAsync()
         {
-            var availableQuestions = await _quizDb.Questions.Include(q => q.Answers).ToListAsync();
-            var rng = new Random();
+            var availableQuestions = await _quizDb.Questions.Include(q => q.Options).ToListAsync();
+            var rng = new Random(DateTime.Now.Millisecond);
             var quiz = new List<Question>();
-            for (int i = 0; i < 10; i++)
+            for (int i = 0; i < 2; i++)
             {
                 var question = availableQuestions.ElementAtOrDefault(rng.Next(0, 49));
                 if (!quiz.Contains(question)) quiz.Add(question);

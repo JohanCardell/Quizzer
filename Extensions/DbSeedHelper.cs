@@ -16,7 +16,7 @@ namespace Quizzer
         private const string URL = "https://opentdb.com/api.php";
         private static string urlParameters = "?amount=50&type=multiple";
         private static List<Question> modelledQuestions = new List<Question>();
-        private static List<Answer> modelledAnswers = new List<Answer>();
+        private static List<Option> modelledOptions = new List<Option>();
       
         public static void Seed(this ModelBuilder modelBuilder)
         {
@@ -46,10 +46,10 @@ namespace Quizzer
                     //Console.WriteLine();
 
                     modelledQuestions.Add(new Question { Id = questionIdCounter, Text = q.Question.CleanSpecialChars() });
-                    modelledAnswers.Add(new Answer { Id = (10 * questionIdCounter) + 1, QuestionId = questionIdCounter, IsCorrect = true,  Text = q.CorrectAnswer.CleanSpecialChars() });
-                    modelledAnswers.Add(new Answer {Id = (10 * questionIdCounter) + 2, QuestionId = questionIdCounter, Text = q.IncorrectAnswers[0].CleanSpecialChars() });
-                    modelledAnswers.Add(new Answer { Id = (10 * questionIdCounter) + 3, QuestionId = questionIdCounter, Text = q.IncorrectAnswers[1].CleanSpecialChars() });
-                    modelledAnswers.Add(new Answer {Id = (10 * questionIdCounter) + 4, QuestionId = questionIdCounter, Text = q.IncorrectAnswers[2].CleanSpecialChars() });
+                    modelledOptions.Add(new Option { Id = (10 * questionIdCounter) + 1, QuestionId = questionIdCounter, IsCorrect = true,  Text = q.CorrectAnswer.CleanSpecialChars() });
+                    modelledOptions.Add(new Option {Id = (10 * questionIdCounter) + 2, QuestionId = questionIdCounter, Text = q.IncorrectAnswers[0].CleanSpecialChars() });
+                    modelledOptions.Add(new Option { Id = (10 * questionIdCounter) + 3, QuestionId = questionIdCounter, Text = q.IncorrectAnswers[1].CleanSpecialChars() });
+                    modelledOptions.Add(new Option {Id = (10 * questionIdCounter) + 4, QuestionId = questionIdCounter, Text = q.IncorrectAnswers[2].CleanSpecialChars() });
 
                     questionIdCounter++;
                 }
@@ -61,7 +61,7 @@ namespace Quizzer
             }
 
             modelBuilder.Entity<Question>().HasData(modelledQuestions);
-            modelBuilder.Entity<Answer>().HasData(modelledAnswers);
+            modelBuilder.Entity<Option>().HasData(modelledOptions);
         }
 
         public static string CleanSpecialChars(this string str)

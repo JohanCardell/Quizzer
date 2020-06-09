@@ -1,128 +1,145 @@
-﻿import React from "react";
+﻿import React, { Component } from 'react';
+import authService from './api-authorization/AuthorizeService'
 
-class Quiz extends React.Component {
-    state = {
-        currentQuestion: 0,
-        myAnswer: null,
-        options: [],
-        score: 0,
-        disabled: true,
-        isEnd: false
-    };
+export class Quiz extends Component {
+    static displayName = Quiz.name;
 
-    loadQuizData = () => {
-        // console.log(quizData[0].question)
-        this.setState(() => {
-            return {
-                questions: quizData[this.state.currentQuestion].question,
-                answer: quizData[this.state.currentQuestion].answer,
-                options: quizData[this.state.currentQuestion].options
-            };
-        });
-    };
+    constructor(props) {
+        super(props);
+        this.state = {
+            currentQuestion: 0,
+            questions: [],
+            options: [],
+            loading: true,
+            selectedOption: null,
+            disabled: true,
+            isFinished: false,
+            score: 0
+
+        };
+        this.handleOptionClick = this.optionClickHandler.bind(this);
+    }
+
 
     componentDidMount() {
-        this.loadQuizData();
+        this.generateQuiz();
     }
-    nextQuestionHandler = () => {
-        // console.log('test')
-        const { myAnswer, answer, score } = this.state;
-
-        if (myAnswer === answer) {
-            this.setState({
-                score: score + 1
-            });
-        }
-
-        this.setState({
-            currentQuestion: this.state.currentQuestion + 1
-        });
-        console.log(this.state.currentQuestion);
-    };
 
     componentDidUpdate(prevProps, prevState) {
         if (this.state.currentQuestion !== prevState.currentQuestion) {
             this.setState(() => {
                 return {
                     disabled: true,
-                    questions: quizData[this.state.currentQuestion].question,
-                    options: quizData[this.state.currentQuestion].options,
-                    answer: quizData[this.state.currentQuestion].answer
+                    options: this.state.questions[this.state.currentQuestion].options,
+                    selectedOption: null
                 };
             });
         }
     }
-    //check answer
-    checkAnswer = answer => {
-        this.setState({ myAnswer: answer, disabled: false });
-    };
-    finishHandler = () => {
-        if (this.state.currentQuestion === quizData.length - 1) {
-            this.setState({
-                isEnd: true
-            });
-        }
-        if (this.state.userAnswer === this.state.correctAnswer) {
-            this.setState({
-                score: this.state.score + 1
-            });
-        }
-    };
-    render() {
-        const { options, myAnswer, currentQuestion, isEnd } = this.state;
 
-        if (isEnd) {
+    nextQuestionHandler = () => {
+        const { selectedOption, score, currentQuestion } = this.state;
+
+        if (selectedOption.iscorrect) {
+            this.setState({
+                score: score + 1
+            });
+        }
+
+        this.setState({
+            currentQuestion: currentQuestion + 1
+        });
+    };
+  
+    optionClickHandler(answer) {
+        this.setState({
+            selectedOption: answer,
+            disabled: false
+        });
+    }
+  
+    finishHandler = () => {
+        const { selectedOption, score, questions, currentQuestion } = this.state;
+        if (currentQuestion === questions.length - 1) {
+            this.setState({
+                isFinished: true
+            });
+        }
+        if (selectedOption.iscorrect) {
+            this.setState({
+                score: score + 1
+            });
+        }
+        console.log(score);
+    };
+
+    playAgainHandler = () => {
+
+    }
+
+    goToLeaderboard = () => {
+
+    }
+          
+    render() {
+        const { score, loading, questions, options, selectedOption, currentQuestion, disabled, isFinished } = this.state;
+
+        let counter = <p>{currentQuestion + 1}/{questions.length}</p>
+        //Next or Finish button
+        let button;
+        if (currentQuestion === questions.length-1) {
+            button = <button className="ui inverted button" disabled={disabled} onClick={this.finishHandler}>Finish</button>
+        }
+        else {
+            button = <button className="ui inverted button" disabled={disabled} onClick={this.nextQuestionHandler}>Next</button>
+        }
+       
+        if (loading) {
             return (
-                <div className="result">
-                    <h3>Game Over your Final score is {this.state.score} points </h3>
-                    <p>
-                        The correct answer's for the questions was
-            <ul>
-                            {quizData.map((item, index) => (
-                                <li className="ui floating message options" key={index}>
-                                    {item.answer}
-                                </li>
-                            ))}
-                        </ul>
-                    </p>
-                </div>
+                <p><em>Loading...</em></p>
             );
-        } else {
+        }
+        else if (isFinished) {
             return (
-                <div className="App">
-                    <h1>{this.state.questions} </h1>
-                    <span>{`Questions ${currentQuestion}  out of ${quizData.length -
-                        1} remaining `}</span>
-                    {options.map(option => (
-                        <p
-                            key={option.id}
-                            className={`ui floating message options
-         ${myAnswer === option ? "selected" : null}
-         `}
-                            onClick={() => this.checkAnswer(option)}
-                        >
-                            {option}
-                        </p>
-                    ))}
-                    {currentQuestion < quizData.length - 1 && (
-                        <button
-                            className="ui inverted button"
-                            disabled={this.state.disabled}
-                            onClick={this.nextQuestionHandler}
-                        >
-                            Next
-                        </button>
-                    )}
-                    {/* //adding a finish button */}
-                    {currentQuestion === quizData.length - 1 && (
-                        <button className="ui inverted button" onClick={this.finishHandler}>
-                            Finish
-                        </button>
-                    )}
+                <div className="scorePage">
+                    <h2>You scored {score} out of {questions.length}</h2>
+                </div>
+             );
+        }
+        else {
+            return (
+                <div className= "quiz">
+                    <h1>{questions[currentQuestion].text} </h1>
+                    {counter}
+                    <ol>
+                        {options.map((option, index) => (
+                            <li key={index}>
+                                <button
+                                    className={` option-button ${selectedOption === option ? "selected" : null}`}
+                                    onClick={this.optionClickHandler.bind(this, option)}
+                                    value={option.text}
+                            >
+                                {option.text}
+                                </button>
+                            </li>
+                        ))}
+                    </ol>
+                    {button}
                 </div>
             );
         }
     }
-}
 
-export default Quiz;
+    async generateQuiz() {
+        const token = await authService.getAccessToken();
+        const response = await fetch('quiz', {
+            headers: !token ? {} : { 'Authorization': `Bearer ${token}` }
+        });
+        const data = await response.json();
+        this.setState({
+            questions: data,
+            options: data[this.state.currentQuestion].options,
+            loading: false
+        });
+    }
+}
