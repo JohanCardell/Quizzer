@@ -14,7 +14,7 @@ namespace Quizzer.Controllers
 {
     [Authorize]
     [ApiController]
-    [Route("[api/highscores]")]
+    [Route("[controller]")]
     public class HighscoreController : ControllerBase
     {
         private readonly ILogger<QuizController> _logger;
@@ -39,9 +39,10 @@ namespace Quizzer.Controllers
 
         }
 
-        [HttpPut]
+        [HttpPost]
         public IActionResult InsertScore([FromBody]string Json)
         {
+            Console.WriteLine(Json);
             var definition = new { userName = "", score = 0 };
             var deserializedData = JsonConvert.DeserializeAnonymousType(Json, definition);
             Console.WriteLine(deserializedData.userName + " scored " + deserializedData.score.ToString());

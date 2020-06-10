@@ -7,7 +7,8 @@ export class Quiz extends Component {
     constructor(props) {
         super(props);
         this.state = {
-            userId: authService.getUser().userId,
+            isAuthenticated: false,
+            userName: null,
             currentQuestion: 0,
             questions: [],
             options: [],
@@ -15,7 +16,8 @@ export class Quiz extends Component {
             selectedOption: null,
             disabled: true,
             isFinished: false,
-            score: 0
+            score: 0,
+            timeStamp: null
 
         };
         this.optionClickHandler = this.optionClickHandler.bind(this);
@@ -25,6 +27,7 @@ export class Quiz extends Component {
 
     componentDidMount() {
         this.generateQuiz();
+        this.populateState();
     }
 
     componentDidUpdate(prevProps, prevState) {
@@ -65,7 +68,8 @@ export class Quiz extends Component {
         const { selectedOption, score, questions, currentQuestion } = this.state;
         if (currentQuestion === questions.length - 1) {
             this.setState({
-                isFinished: true
+                isFinished: true,
+                timeStamp: Date.now()
             });
         }
         if (selectedOption.isCorrect) {
@@ -78,7 +82,7 @@ export class Quiz extends Component {
 
     resetState = () => {
         this.setState = {
-            userName: authService.getUser().username,
+            userName: null,
             currentQuestion: 0,
             questions: [],
             options: [],
@@ -150,10 +154,13 @@ export class Quiz extends Component {
     }
 
     async insertScore() {
+        console.log(this.state.userName);
+        console.log(this.state.score);
+        console.log(this.timeStamp);
         const token = await authService.getAccessToken();
-        const response = await fetch('api/highscores', {
+        const response = await fetch('highscore', {
             method: "POST",
-            body: JSON.stringify({ userName: this.state.userName, score: this.state.score }),
+            body: JSON.stringify({ userName: this.state.userName, score: this.state.score, timestamp: this.state.timeStamp }),
             headers: !token ? {} : { 'Authorization': `Bearer ${token}` }
         });
         const result = await response.json();
@@ -172,6 +179,14 @@ export class Quiz extends Component {
             questions: data,
             options: data[this.state.currentQuestion].options,
             loading: false
+        });
+    }
+
+    async populateState() {
+        const [isAuthenticated, user] = await Promise.all([authService.isAuthenticated(), authService.getUser()])
+        this.setState({
+            isAuthenticated,
+            userName: user && user.name
         });
     }
 }

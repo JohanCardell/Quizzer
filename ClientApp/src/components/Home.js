@@ -8,15 +8,21 @@ export class Home extends Component {
     constructor(props) {
         super(props);
         this.state = {
-            userName: authService.getUser().userName,
+            isAuthenticated: false,
+            userName: null
         };
-        
     }
 
     componentDidMount() {
-        this.setState = {
-            userName: authService.getUser().userName,
-        };
+        this.populateState();
+    }
+
+    async populateState() {
+        const [isAuthenticated, user] = await Promise.all([authService.isAuthenticated(), authService.getUser()])
+        this.setState({
+            isAuthenticated,
+            userName: user && user.name
+        });
     }
 
     render() {
