@@ -8,6 +8,5 @@ namespace Quizzer.Models
 {
     public class ApplicationUser : IdentityUser
     {
-        public ICollection<ScoreEntry> ScoreEntries { get; set; }
     }
 }

@@ -150,6 +150,7 @@ export class Quiz extends Component {
     }
 
     async insertScore() {
+        const scoreEntry = { userName: { this.state.userName } }
         const token = await authService.getAccessToken();
         const response = await fetch('api/highscores', {
             method: "POST",

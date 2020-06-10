@@ -50,7 +50,6 @@ namespace Quizzer.Controllers
                 var userEntity = _quizDb.Players.FirstOrDefaultAsync(p => p.UserName == deserializedData.userName).Result;
                 var scoreEntity = new ScoreEntry
                 {
-                    QuizPlayerId = userEntity.Id,
                     EntryDate = DateTime.Today,
                     Score = deserializedData.score
                 };
