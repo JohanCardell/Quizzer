@@ -19,7 +19,7 @@ namespace Quizzer.Controllers
         private readonly ILogger<QuizController> _logger;
         private readonly QuizDbContext _quizDb;
 
-        public QuizController(ILogger<QuizController> logger, QuizDbContext quizDb)
+        public QuizController(ILogger<QuizController> logger, QuizDbContext quizDb, IAuthorizationService authService)
         {
             _logger = logger;
             _quizDb = quizDb;

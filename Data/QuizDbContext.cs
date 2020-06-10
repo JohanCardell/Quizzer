@@ -27,7 +27,7 @@ namespace Quizzer.Data
             base.OnModelCreating(modelBuilder);
 
             modelBuilder.Entity<ApplicationUser>()
-                .OwnsMany(qp => qp.ScoreEntries);
+                .HasMany(qp => qp.ScoreEntries);
         }
     }
 }

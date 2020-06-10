@@ -1,5 +1,5 @@
 ﻿import React, { Component } from 'react';
-import authService from './api-authorization/AuthorizeService'
+import authService from './api-authorization/AuthorizeService';
 
 export class Quiz extends Component {
     static displayName = Quiz.name;
@@ -7,6 +7,7 @@ export class Quiz extends Component {
     constructor(props) {
         super(props);
         this.state = {
+            userId: authService.getUser().userId,
             currentQuestion: 0,
             questions: [],
             options: [],
@@ -17,7 +18,8 @@ export class Quiz extends Component {
             score: 0
 
         };
-        this.handleOptionClick = this.optionClickHandler.bind(this);
+        this.optionClickHandler = this.optionClickHandler.bind(this);
+        this.nextQuestionHandler = this.nextQuestionHandler.bind(this)
     }
 
 
@@ -37,26 +39,27 @@ export class Quiz extends Component {
         }
     }
 
-    nextQuestionHandler = () => {
+    nextQuestionHandler =() => {
         const { selectedOption, score, currentQuestion } = this.state;
 
-        if (selectedOption.iscorrect) {
+
+        if (selectedOption.isCorrect) {
             this.setState({
                 score: score + 1
             });
         }
-
+        
         this.setState({
             currentQuestion: currentQuestion + 1
         });
     };
   
-    optionClickHandler(answer) {
+    optionClickHandler = answer => {
         this.setState({
             selectedOption: answer,
             disabled: false
         });
-    }
+    };
   
     finishHandler = () => {
         const { selectedOption, score, questions, currentQuestion } = this.state;
@@ -65,22 +68,37 @@ export class Quiz extends Component {
                 isFinished: true
             });
         }
-        if (selectedOption.iscorrect) {
+        if (selectedOption.isCorrect) {
             this.setState({
                 score: score + 1
             });
         }
-        console.log(score);
+       
     };
+
+    resetState = () => {
+        this.setState = {
+            userName: authService.getUser().username,
+            currentQuestion: 0,
+            questions: [],
+            options: [],
+            loading: true,
+            selectedOption: null,
+            disabled: true,
+            isFinished: false,
+            score: 0
+        };
+    }
 
     playAgainHandler = () => {
 
-    }
+    };
 
     goToLeaderboard = () => {
 
-    }
-          
+    };
+
+    
     render() {
         const { score, loading, questions, options, selectedOption, currentQuestion, disabled, isFinished } = this.state;
 
@@ -91,7 +109,7 @@ export class Quiz extends Component {
             button = <button className="ui inverted button" disabled={disabled} onClick={this.finishHandler}>Finish</button>
         }
         else {
-            button = <button className="ui inverted button" disabled={disabled} onClick={this.nextQuestionHandler}>Next</button>
+            button = <button className="ui inverted button" disabled={disabled} onClick={this.nextQuestionHandler.bind(this)}>Next</button>
         }
        
         if (loading) {
@@ -100,6 +118,7 @@ export class Quiz extends Component {
             );
         }
         else if (isFinished) {
+            this.insertScore();
             return (
                 <div className="scorePage">
                     <h2>You scored {score} out of {questions.length}</h2>
@@ -116,7 +135,7 @@ export class Quiz extends Component {
                             <li key={index}>
                                 <button
                                     className={` option-button ${selectedOption === option ? "selected" : null}`}
-                                    onClick={this.optionClickHandler.bind(this, option)}
+                                    onClick={ ()=> this.optionClickHandler( option)}
                                     value={option.text}
                             >
                                 {option.text}
@@ -129,6 +148,19 @@ export class Quiz extends Component {
             );
         }
     }
+
+    async insertScore() {
+        const token = await authService.getAccessToken();
+        const response = await fetch('api/highscores', {
+            method: "POST",
+            body: JSON.stringify({ userName: this.state.userName, score: this.state.score }),
+            headers: !token ? {} : { 'Authorization': `Bearer ${token}` }
+        });
+        const result = await response.json();
+        console.log(result);
+        this.resetState();
+    };
+   
 
     async generateQuiz() {
         const token = await authService.getAccessToken();
