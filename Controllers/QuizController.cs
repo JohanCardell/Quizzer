@@ -31,11 +31,11 @@ namespace Quizzer.Controllers
             var availableQuestions = await _quizDb.Questions.Include(q => q.Options).ToListAsync();
             var rng = new Random(DateTime.Now.Millisecond);
             var quiz = new List<Question>();
-            for (int i = 0; i < 2; i++)
-            {
+            do{
                 var question = availableQuestions.ElementAtOrDefault(rng.Next(0, 49));
                 if (!quiz.Contains(question)) quiz.Add(question);
-            }
+            } while (quiz.Count() < 10);
+
             return quiz;
         }
     }

@@ -17,10 +17,10 @@ namespace Quizzer.Controllers
     [Route("[controller]")]
     public class HighscoreController : ControllerBase
     {
-        private readonly ILogger<QuizController> _logger;
+        private readonly ILogger<HighscoreController> _logger;
         private readonly QuizDbContext _quizDb;
 
-        public HighscoreController(ILogger<QuizController> logger, QuizDbContext quizDb)
+        public HighscoreController(ILogger<HighscoreController> logger, QuizDbContext quizDb)
         {
             _logger = logger;
             _quizDb = quizDb;
@@ -29,35 +29,22 @@ namespace Quizzer.Controllers
         [HttpGet]
         public async Task<IEnumerable<ScoreEntry>> GetAsync()
         {
-            var leaderBoard = await _quizDb.ScoreEntries.Include(se => se.QuizPlayer).ToListAsync();
-            var whatever = leaderBoard.OrderBy(se => se.Score).ThenBy(se => se.EntryDate).ThenBy(se => se.QuizPlayer.UserName).Take(10);
-            foreach (var item in whatever)
-            {
-                Console.WriteLine("scores "+ item.Score);
-            }
-            return whatever;
+            var leaderBoard = await _quizDb.ScoreEntries.ToListAsync();
+            var sortedLeaderboard = leaderBoard.OrderByDescending( se => se.Score).ThenByDescending (se => se.EntryDate).Take(10);
+            return sortedLeaderboard;
 
         }
 
         [HttpPost]
-        public IActionResult InsertScore([FromBody]string Json)
+        public IActionResult InsertScore([FromBody]ScoreEntry json)
         {
-            Console.WriteLine(Json);
-            var definition = new { userName = "", score = 0 };
-            var deserializedData = JsonConvert.DeserializeAnonymousType(Json, definition);
-            Console.WriteLine(deserializedData.userName + " scored " + deserializedData.score.ToString());
             try
             {
-                var userEntity = _quizDb.Players.FirstOrDefaultAsync(p => p.UserName == deserializedData.userName).Result;
-                var scoreEntity = new ScoreEntry
-                {
-                    EntryDate = DateTime.Today,
-                    Score = deserializedData.score
-                };
-                _quizDb.ScoreEntries.AddAsync(scoreEntity);
-                _quizDb.SaveChangesAsync();
+                json.EntryDate = DateTime.UtcNow;
+                _quizDb.ScoreEntries.Add(json);
+                _quizDb.SaveChanges();
 
-                return StatusCode(200);
+                return StatusCode(200, "All good");
             }
             catch (Exception ex)
             {

@@ -9,7 +9,7 @@ export class Quiz extends Component {
         this.state = {
             isAuthenticated: false,
             userName: null,
-            currentQuestion: 0,
+            currentQuestionIndex: 0,
             questions: [],
             options: [],
             loading: true,
@@ -17,11 +17,10 @@ export class Quiz extends Component {
             disabled: true,
             isFinished: false,
             score: 0,
-            timeStamp: null
 
         };
         this.optionClickHandler = this.optionClickHandler.bind(this);
-        this.nextQuestionHandler = this.nextQuestionHandler.bind(this)
+        this.nextQuestionHandler = this.nextQuestionHandler.bind(this);
     }
 
 
@@ -31,45 +30,49 @@ export class Quiz extends Component {
     }
 
     componentDidUpdate(prevProps, prevState) {
-        if (this.state.currentQuestion !== prevState.currentQuestion) {
+        if (this.state.currentQuestionIndex !== prevState.currentQuestionIndex) {
             this.setState(() => {
                 return {
                     disabled: true,
-                    options: this.state.questions[this.state.currentQuestion].options,
+                    options: this.state.questions[this.state.currentQuestionIndex].options,
                     selectedOption: null
                 };
             });
         }
     }
 
-    nextQuestionHandler =() => {
-        const { selectedOption, score, currentQuestion } = this.state;
-
+    nextQuestionHandler = () => {
+        const { questions, selectedOption, score, currentQuestionIndex } = this.state;
 
         if (selectedOption.isCorrect) {
             this.setState({
                 score: score + 1
             });
         }
-        
+
+        const nextQuestionIndex = currentQuestionIndex + 1;
+        const shuffledOptions = this.shuffleOptions(questions[nextQuestionIndex].options);
+
         this.setState({
-            currentQuestion: currentQuestion + 1
+            currentQuestionIndex: nextQuestionIndex,
+            options: shuffledOptions
         });
     };
-  
+
     optionClickHandler = answer => {
         this.setState({
             selectedOption: answer,
             disabled: false
         });
     };
-  
+
     finishHandler = () => {
-        const { selectedOption, score, questions, currentQuestion } = this.state;
-        if (currentQuestion === questions.length - 1) {
+        const { selectedOption, score, questions, currentQuestionIndex } = this.state;
+        const date = new Date();
+        if (currentQuestionIndex === questions.length - 1) {
             this.setState({
                 isFinished: true,
-                timeStamp: Date.now()
+                timeStamp: date
             });
         }
         if (selectedOption.isCorrect) {
@@ -77,45 +80,23 @@ export class Quiz extends Component {
                 score: score + 1
             });
         }
-       
-    };
-
-    resetState = () => {
-        this.setState = {
-            userName: null,
-            currentQuestion: 0,
-            questions: [],
-            options: [],
-            loading: true,
-            selectedOption: null,
-            disabled: true,
-            isFinished: false,
-            score: 0
-        };
-    }
-
-    playAgainHandler = () => {
 
     };
 
-    goToLeaderboard = () => {
-
-    };
-
-    
     render() {
-        const { score, loading, questions, options, selectedOption, currentQuestion, disabled, isFinished } = this.state;
+        const { score, loading, questions, options, selectedOption, currentQuestionIndex, disabled, isFinished } = this.state;
 
-        let counter = <p>{currentQuestion + 1}/{questions.length}</p>
-        //Next or Finish button
-        let button;
-        if (currentQuestion === questions.length-1) {
-            button = <button className="ui inverted button" disabled={disabled} onClick={this.finishHandler}>Finish</button>
+        let countDisplay = <p>{currentQuestionIndex + 1}/{questions.length}</p>
+
+        let nextOrFinishButton;
+
+        if (currentQuestionIndex === questions.length-1) {
+            nextOrFinishButton = <button disabled={disabled} onClick={this.finishHandler}>Finish</button>
         }
         else {
-            button = <button className="ui inverted button" disabled={disabled} onClick={this.nextQuestionHandler.bind(this)}>Next</button>
+            nextOrFinishButton = <button disabled={disabled} onClick={this.nextQuestionHandler.bind(this)}>Next</button>
         }
-       
+
         if (loading) {
             return (
                 <p><em>Loading...</em></p>
@@ -131,12 +112,11 @@ export class Quiz extends Component {
         }
         else {
             return (
-                <div className= "quiz">
-                    <h1>{questions[currentQuestion].text} </h1>
-                    {counter}
-                    <ol>
+                <div className="quiz" key="quiz">
+                    <h1>{questions[currentQuestionIndex].text} </h1>
+                    {countDisplay}
                         {options.map((option, index) => (
-                            <li key={index}>
+                            <p key={index}>
                                 <button
                                     className={` option-button ${selectedOption === option ? "selected" : null}`}
                                     onClick={ ()=> this.optionClickHandler( option)}
@@ -144,30 +124,38 @@ export class Quiz extends Component {
                             >
                                 {option.text}
                                 </button>
-                            </li>
+                            </p>
                         ))}
-                    </ol>
-                    {button}
+                    {nextOrFinishButton}
                 </div>
             );
         }
     }
 
+     shuffleOptions(options) {
+        var currentIndex = options.length, temporaryValue, randomIndex;
+
+        while (0 !== currentIndex) {
+
+            randomIndex = Math.floor(Math.random() * currentIndex);
+            currentIndex -= 1;
+
+            temporaryValue = options[currentIndex];
+            options[currentIndex] = options[randomIndex];
+            options[randomIndex] = temporaryValue;
+        }
+        return options;
+    }
+
     async insertScore() {
-        console.log(this.state.userName);
-        console.log(this.state.score);
-        console.log(this.timeStamp);
         const token = await authService.getAccessToken();
         const response = await fetch('highscore', {
             method: "POST",
-            body: JSON.stringify({ userName: this.state.userName, score: this.state.score, timestamp: this.state.timeStamp }),
-            headers: !token ? {} : { 'Authorization': `Bearer ${token}` }
+            body: JSON.stringify({ PlayerName: this.state.userName, Score: this.state.score}),
+            headers: !token ? {} : { 'Authorization': `Bearer ${token}`, 'Content-Type': 'application/json' }
         });
-        const result = await response.json();
-        console.log(result);
-        this.resetState();
     };
-   
+
 
     async generateQuiz() {
         const token = await authService.getAccessToken();
@@ -177,7 +165,7 @@ export class Quiz extends Component {
         const data = await response.json();
         this.setState({
             questions: data,
-            options: data[this.state.currentQuestion].options,
+            options: data[this.state.currentQuestionIndex].options,
             loading: false
         });
     }

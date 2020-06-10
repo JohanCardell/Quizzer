@@ -14,7 +14,11 @@ namespace Quizzer
     public static class DbSeedHelper
     {
         private const string URL = "https://opentdb.com/api.php";
-        private static string urlParameters = "?amount=50&type=multiple";
+        private static string amountParameter = "?amount=50";
+        private static string categoryParameter = "&category=15";
+        private static string difficultyParameter = "&difficulty=medium";
+        private static string typeParameter = "&type=multiple";
+        private static string urlParameters = amountParameter + categoryParameter + difficultyParameter + typeParameter;
         private static List<Question> modelledQuestions = new List<Question>();
         private static List<Option> modelledOptions = new List<Option>();
       
@@ -37,14 +41,7 @@ namespace Quizzer
 
                 foreach (var q in resultCollection.Results)
                 {
-                    //Console.WriteLine("{0}", q.Question.CleanSpecialChars());
-                    //Console.WriteLine("Correct answer: {0}", q.CorrectAnswer);
-                    //Console.WriteLine("Incorrect answers: {0}, {1}, {2}",
-                    //    q.IncorrectAnswers[0].CleanSpecialChars(),
-                    //    q.IncorrectAnswers[1].CleanSpecialChars(),
-                    //    q.IncorrectAnswers[2].CleanSpecialChars());
-                    //Console.WriteLine();
-
+               
                     modelledQuestions.Add(new Question { Id = questionIdCounter, Text = q.Question.CleanSpecialChars() });
                     modelledOptions.Add(new Option { Id = (10 * questionIdCounter) + 1, QuestionId = questionIdCounter, IsCorrect = true,  Text = q.CorrectAnswer.CleanSpecialChars() });
                     modelledOptions.Add(new Option {Id = (10 * questionIdCounter) + 2, QuestionId = questionIdCounter, Text = q.IncorrectAnswers[0].CleanSpecialChars() });

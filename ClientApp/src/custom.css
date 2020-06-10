@@ -18,8 +18,7 @@ code {
 }
 
 .selected {
-    /*background: radial-gradient(#7ceaa7, #b4cab1) !important;*/
-    background: radial-gradient(#74ebd5, #acb6e5);
+    background: rgba(85, 225, 114, 0.95) !important
 }
 
 
@@ -28,15 +27,16 @@ code {
     display: inline-block;
     border: 2px solid black;
     padding: 10px;
-    margin: 10px;
-    /*background: radial-gradient(#74ebd5, #acb6e5);*/
+    margin: 13px 12px 12px 10px;
+    background: rgba(120, 212, 221, 0.95);
 }
+
+
 
 .quiz {
     font-family: sans-serif;
     text-align: center;
-    background: rgb(34,193,195);
-    background: linear-gradient(0deg, rgba(34,193,195,1) 0%, rgba(255,255,255,1) 100%);
+ 
     padding: 10px, 20px, 30px, 20px;
 }
 

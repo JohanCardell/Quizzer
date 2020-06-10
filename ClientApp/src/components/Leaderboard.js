@@ -14,7 +14,7 @@ export class Leaderboard extends Component {
 
 
     componentDidMount() {
-        this.getTopTenScores();
+        this.getHighScore();
     }
 
     render() {
@@ -24,39 +24,36 @@ export class Leaderboard extends Component {
                 <p><em>Loading...</em></p>
             );
         }
-        else if (scoreEntries === null)
-            return (
-                <p><em>There are no entries</em></p>
-            );
         else {
             return (
-                <div className="leaderboard">
+                <div className='table table-striped'>
                     <h1> Top ten scores </h1>
                     <table className="striped">
-                        <tr>
-                            <th> Score </th>
-                            <th> Date </th>
-                            <th> Player </th>
-                        </tr>
-                        {
-                            scoreEntries.map((entry, index) => (
+                        <thead>
+                            <tr>
+                                <th> Score </th>
+                                <th> Date </th>
+                                <th> Player </th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {scoreEntries.map((entry, index) => (
                                 <tr key={index}>
                                     <td>{entry.score}</td>
-                                    <td>{entry.entrydate}</td>
-                                    <td>{entry.quizplayer.username}</td>
+                                    <td>{entry.entryDate}</td>
+                                    <td>{entry.playerName}</td>
                                 </tr>
-                            ))
-                        } 
+                            ))}
+                        </tbody>
                     </table>
                 </div>
             );
         }
     }
 
-
-    async getTopTenScores() {
+    async getHighScore() {
         const token = await authService.getAccessToken();
-        const response = await fetch('score', {
+        const response = await fetch('highscore', {
             headers: !token ? {} : { 'Authorization': `Bearer ${token}` }
         });
        
@@ -67,5 +64,8 @@ export class Leaderboard extends Component {
             loading: false
         });
     }
+
+
+
 }
 
